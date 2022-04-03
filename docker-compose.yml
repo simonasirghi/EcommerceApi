@@ -1,0 +1,47 @@
+version: '3.3'
+
+services:
+  db:
+    image: mysql:5.7
+    environment:
+      MYSQL_RANDOM_ROOT_PASSWORD: 1
+      MYSQL_DATABASE: accountowner
+      MYSQL_USER: dbuser
+      MYSQL_PASSWORD: dbuserpassword
+    volumes:
+      - dbdata:/var/lib/mysql
+    restart: always
+
+  rabbitmq:
+    container_name: "rabbitmq"
+    image: rabbitmq:3.8-management-alpine
+    hostname: "rabbitmq"
+    environment:
+      - RABBITMQ_DEFAULT_USER=myuser
+      - RABBITMQ_DEFAULT_PASS=mypassword
+    ports:
+      - 5673:5673
+      - 5672:5672
+      - 15672:15672
+
+  image-processor-worker-service:
+    image: imageprocessorworkerservice
+    volumes:
+      - tempstorage:/home/TempStorage
+    depends_on:
+      - rabbitmq
+      - mysql-server
+
+  ecommerce-api:
+    image: ecommerceapi
+    volumes:
+      - tempstorage:/home/TempStorage
+    ports:
+      - '5000:80'
+    depends_on:
+      - rabbitmq
+      - db
+
+volumes:
+  dbdata:
+  tempstorage:
