@@ -34,7 +34,7 @@ namespace EcommerceApi.Controllers
                 .Include(b => b.Product).ToListAsync();
 
             List<SessionLineItemOptions> PurchasedItems = new List<SessionLineItemOptions>();
-            // VERIFICA DACA AI STOC SUFICIENT
+            
             foreach (var item in cart)
             {
                 var aux = new SessionLineItemOptions
